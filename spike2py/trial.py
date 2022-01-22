@@ -146,7 +146,7 @@ class Trial:
     def plot(self, save: Literal[True, False] = None) -> None:
         plot.plot_trial(self, save=save)
 
-    def save(self, file: typing.Optional[Path, str] = None):
+    def save(self, file: typing.Optional[Union[Path, str]] = None):
         """Save trial
 
         Parameters
