@@ -1,9 +1,10 @@
+import pathlib
+import typing
 from typing import NamedTuple, List, Literal, Union
 from pathlib import Path
 import pickle
 
 from spike2py import channels, read, plot
-
 
 CHANNEL_GENERATOR = {
     "event": channels.Event,
@@ -100,6 +101,10 @@ class Trial:
             f"\n\tchannels {channel_info}"
         )
 
+    def get_safe_path_pickle(self) -> pathlib.Path:
+        pickle_file = self.info.path_save_trial / (self.info.name + ".pkl")
+        return pickle_file
+
     def _add_defaults_to_trial_info(self, trial_info: TrialInfo):
         name = trial_info.name if trial_info.name else Path(trial_info.file).stem
         subject_id = trial_info.subject_id if trial_info.subject_id else "sub"
@@ -141,7 +146,7 @@ class Trial:
     def plot(self, save: Literal[True, False] = None) -> None:
         plot.plot_trial(self, save=save)
 
-    def save(self):
+    def save(self, fp: typing.Optional[pathlib.Path] = None):
         """Save trial
 
         Trial will be saved (pickled) to `info.path_save_trial` as info.name + '.pkl'
@@ -149,7 +154,10 @@ class Trial:
         """
         if not self.info.path_save_trial.exists():
             self.info.path_save_trial.mkdir()
-        pickle_file = self.info.path_save_trial / (self.info.name + ".pkl")
+        if fp is None:
+            pickle_file = self.get_safe_path_pickle()
+        else:
+            pickle_file = fp
         with open(pickle_file, "wb") as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
