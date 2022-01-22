@@ -130,7 +130,7 @@ class Trial:
             value["subject_id"] = self.info.subject_id
             setattr(
                 self,
-                key,
+                key.title(),
                 CHANNEL_GENERATOR[value["ch_type"]](key, value),
             )
         self.channels = channel_names
