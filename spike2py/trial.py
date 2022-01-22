@@ -146,18 +146,23 @@ class Trial:
     def plot(self, save: Literal[True, False] = None) -> None:
         plot.plot_trial(self, save=save)
 
-    def save(self, fp: typing.Optional[pathlib.Path] = None):
+    def save(self, file: typing.Optional[Path, str] = None):
         """Save trial
 
-        Trial will be saved (pickled) to `info.path_save_trial` as info.name + '.pkl'
+        Parameters
+        ----------
+        file: pathlib.Path, str
+            Full path and file name to the path where to write the pickl.
+            For example: '/home/tammy/Desktop/trial1.pkl`
+            if file is None, Trial will be saved (pickled) to `info.path_save_trial` as info.name + '.pkl'
 
         """
         if not self.info.path_save_trial.exists():
             self.info.path_save_trial.mkdir()
-        if fp is None:
+        if file is None:
             pickle_file = self.get_safe_path_pickle()
         else:
-            pickle_file = fp
+            pickle_file = file
         with open(pickle_file, "wb") as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
