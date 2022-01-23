@@ -128,6 +128,7 @@ class Trial:
         )
 
     def _parse_trial_data(self):
+
         trial_data = self._import_trial_data()
         channel_names = list()
         for key, value in trial_data.items():
@@ -139,7 +140,7 @@ class Trial:
             setattr(
                 self,
                 key,
-                Channel.get_channel_generator(enm=EnumChannelTypes[channel_type])(key, value),
+                Channel.get_channel_generator(enm=EnumChannelTypes(channel_type))(key, value),
             )
         self.channels = channel_names
 
