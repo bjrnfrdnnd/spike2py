@@ -129,13 +129,13 @@ class Trial:
         trial_data = self._import_trial_data()
         channel_names = list()
         for key, value in trial_data.items():
-            channel_names.append((key.title(), value["ch_type"]))
+            channel_names.append((key, value["ch_type"]))
             value["path_save_figures"] = self.info.path_save_figures
             value["trial_name"] = self.info.name
             value["subject_id"] = self.info.subject_id
             setattr(
                 self,
-                key.title(),
+                key,
                 CHANNEL_GENERATOR[value["ch_type"]](key, value),
             )
         self.channels = channel_names
