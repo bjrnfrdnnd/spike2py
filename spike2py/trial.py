@@ -1,19 +1,12 @@
 import pathlib
-import typing
-from typing import NamedTuple, List, Literal, Union
-from pathlib import Path
 import pickle
+import typing
+from pathlib import Path
+from typing import NamedTuple, List, Literal, Union
 
-from spike2py import channels, read, plot
+from spike2py import read, plot
 from spike2py.channels import Channel
 from spike2py.enums import EnumChannelTypes
-
-CHANNEL_GENERATOR = {
-    "event": channels.Event,
-    "keyboard": channels.Keyboard,
-    "waveform": channels.Waveform,
-    "wavemark": channels.Wavemark,
-}
 
 
 class TrialInfo(NamedTuple):
