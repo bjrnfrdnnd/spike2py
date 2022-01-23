@@ -5,6 +5,8 @@ from pathlib import Path
 import pickle
 
 from spike2py import channels, read, plot
+from spike2py.channels import Channel
+from spike2py.enums import EnumChannelTypes
 
 CHANNEL_GENERATOR = {
     "event": channels.Event,
@@ -129,14 +131,15 @@ class Trial:
         trial_data = self._import_trial_data()
         channel_names = list()
         for key, value in trial_data.items():
-            channel_names.append((key, value["ch_type"]))
+            channel_type = value['ch_type']
+            channel_names.append((key, channel_type))
             value["path_save_figures"] = self.info.path_save_figures
             value["trial_name"] = self.info.name
             value["subject_id"] = self.info.subject_id
             setattr(
                 self,
                 key,
-                CHANNEL_GENERATOR[value["ch_type"]](key, value),
+                Channel.get_channel_generator(enm=EnumChannelTypes[channel_type])(key, value),
             )
         self.channels = channel_names
 

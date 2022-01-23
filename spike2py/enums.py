@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class EnumChannelTypes(Enum):
-    EVENTS = 'events'
+    EVENT = 'event'
     KEYBOARD = 'keyboard'
     WAVEFORM = 'waveform'
     WAVEMARK = 'wavemark'

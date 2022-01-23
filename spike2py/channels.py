@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import NamedTuple, Literal
 
@@ -5,6 +6,7 @@ import numpy as np
 
 import spike2py.plot as plot
 import spike2py.sig_proc as sig_proc
+from spike2py.enums import EnumChannelTypes
 
 from spike2py.types import (
     parsed_wavemark,
@@ -53,6 +55,17 @@ class Channel:
     def __init__(self, channel_info: ChannelInfo, times: np.ndarray) -> None:
         self.info = channel_info
         self.times = times
+        self.type = EnumChannelTypes.UNSET
+
+    @classmethod
+    def get_channel_generator(cls, enm: EnumChannelTypes):
+        result = None
+        thismodule = sys.modules[__name__]
+        result = getattr(thismodule, enm.value.title())
+        return result
+
+    def __repr__(self):
+        return f'{self.type.value} channel'
 
 
 class Event(Channel):
@@ -81,9 +94,7 @@ class Event(Channel):
             ),
             data_dict["times"],
         )
-
-    def __repr__(self) -> str:
-        return "Event channel"
+        self.type = EnumChannelTypes.EVENT
 
     def plot(self, save: Literal[True, False] = False) -> None:
         """Save Event channel figure
@@ -125,9 +136,7 @@ class Keyboard(Channel):
             ),
             data_dict["times"],
         )
-
-    def __repr__(self) -> str:
-        return "Keyboard channel"
+        self.type = EnumChannelTypes.KEYBOARD
 
     def plot(self, save: Literal[True, False] = False) -> None:
         """Save Keyboard channel figure
@@ -175,9 +184,7 @@ class Waveform(Channel, sig_proc.SignalProcessing):
             ),
             data_dict["times"],
         )
-
-    def __repr__(self) -> str:
-        return "Waveform channel"
+        self.type = EnumChannelTypes.WAVEFORM
 
     def plot(self, save: Literal[True, False] = None) -> None:
         """Save Waveform channel figure
@@ -225,9 +232,7 @@ class Wavemark(Channel):
         )
         self.action_potentials = data_dict["action_potentials"]
         self._calc_instantaneous_firing_frequency()
-
-    def __repr__(self) -> str:
-        return "Wavemark channel"
+        self.type = EnumChannelTypes.WAVEMARK
 
     def _calc_instantaneous_firing_frequency(self):
         time1: float = self.times[0]
@@ -238,7 +243,7 @@ class Wavemark(Channel):
         self.inst_firing_frequency = np.array(inst_firing_frequency)
 
     def plot(self, save: Literal[True, False] = None):
-        """Save Waveform channel figure
+        """Save Wavemark channel figure
 
         Parameters
         ----------
