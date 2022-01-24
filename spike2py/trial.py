@@ -141,6 +141,9 @@ class Trial(TrialA):
         if isinstance(id, str):
             del self.channel_dict[id]
             delattr(self, id)
+        if isinstance(id, Channel):
+            del self.channel_dict[id.name]
+            delattr(self, id.name)
 
     def _parse_trial_data(self):
 
