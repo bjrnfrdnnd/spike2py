@@ -16,7 +16,7 @@ def test_channels_event_init(channels_init, channels_mock):
     assert ch.info.trial_name == channels_mock[ch_type]["info"].trial_name
     assert ch.info.subject_id == channels_mock[ch_type]["info"].subject_id
     assert list(ch.times) == list(channels_mock[ch_type]["times"])
-    assert repr(ch) == Ch.get_repr(ch_type)
+    assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions
 
 
 def test_channels_keyboard_init(channels_init, channels_mock):
@@ -30,7 +30,7 @@ def test_channels_keyboard_init(channels_init, channels_mock):
     assert ch.info.trial_name == channels_mock[ch_type]["info"].trial_name
     assert ch.info.subject_id == channels_mock[ch_type]["info"].subject_id
     assert list(ch.times) == list(channels_mock[ch_type]["times"])
-    assert repr(ch) == Ch.get_repr(ch_type)
+    assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions
 
 
 def test_channels_waveform_init(channels_init, channels_mock):
@@ -48,7 +48,7 @@ def test_channels_waveform_init(channels_init, channels_mock):
     assert ch.info.units == channels_mock[ch_type]["info"].units
     assert list(ch.values) == list(channels_mock[ch_type]["values"])
     assert (ch.info.sampling_frequency == channels_mock[ch_type]["info"].sampling_frequency)
-    assert repr(ch) == Ch.get_repr(ch_type)
+    assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions
 
 
 def test_channels_wavemark_init(channels_init, channels_mock):
@@ -66,4 +66,4 @@ def test_channels_wavemark_init(channels_init, channels_mock):
     assert (ch.info.sampling_frequency == channels_mock[ch_type]["info"].sampling_frequency)
     assert (ch.action_potentials == channels_mock[ch_type]['action_potentials'])
     assert (ch.inst_firing_frequency == approx(channels_mock[ch_type]['instantaneous_firing_frequency']))
-    assert repr(ch) == Ch.get_repr(ch_type)
+    assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions

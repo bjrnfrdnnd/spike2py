@@ -76,8 +76,12 @@ class Channel(ChannelA):
         result = f'{enm.value} channel'
         return result
 
+    def get_repr2(self) -> str:
+        result = f'{self.name}: {self.type.value}'
+        return result
+
     def __repr__(self) -> str:
-        result = self.get_repr(enm=self.type)
+        result = self.get_repr2()
         return result
 
 
