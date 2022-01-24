@@ -1,4 +1,4 @@
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from . import trial
 from . import channels
@@ -7,3 +7,4 @@ from . import sig_proc
 from . import plot
 from . import types
 from . import demo
+from . import enums

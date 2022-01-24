@@ -1,22 +1,25 @@
 import pathlib
 import pickle
 import typing
+from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, List, Literal, Union
 
 from spike2py import read, plot
+from spike2py.ABC import TrialA, TrialInfoA
 from spike2py.channels import Channel
 from spike2py.enums import EnumChannelTypes
 
 
-class TrialInfo(NamedTuple):
+@dataclass
+class TrialInfo(TrialInfoA):
     """Information about trial
 
     See :class:`spike2py.trial.Trial` parameters for details.
     """
 
     file: Path = None
-    channels: List[str] = None
+    channel_names: List[str] = None
     name: str = None
     subject_id: str = None
     path_save_figures: Path = None
@@ -26,7 +29,7 @@ class TrialInfo(NamedTuple):
         return (
             f"TrialInfo(\n"
             f"\tfile={repr(self.file)},\n"
-            f"\tchannels={repr(self.channels)},\n"
+            f"\tchannels={repr(self.channel_names)},\n"
             f"\tname={repr(self.name)}, \n"
             f"\tsubject_id={repr(self.subject_id)},\n"
             f"\tpath_save_figures={repr(self.path_save_figures)},\n"
@@ -35,7 +38,7 @@ class TrialInfo(NamedTuple):
         )
 
 
-class Trial:
+class Trial(TrialA):
     """Class for experimental trial recorded using Spike2
 
     Parameters
@@ -79,13 +82,17 @@ class Trial:
     def __init__(self, trial_info: TrialInfo) -> None:
         if not trial_info.file:
             raise ValueError("info must include a valid full path to a data file.")
+        self.channel_dict = {}
+        self.info = trial_info
         self._add_defaults_to_trial_info(trial_info)
         self._parse_trial_data()
 
+
     def __repr__(self) -> str:
         channel_text = list()
-        for channel_name, channel_type in self.channels:
-            channel_text.append(f"\n\t\t{channel_name} ({channel_type})")
+        for k, v in self.channel_dict.items():
+            v: Channel
+            channel_text.append(f"\n\t\t{k} ({v.type.value})")
         channel_info = "".join(channel_text)
         return (
             f"\n{self.info.name}"
@@ -93,8 +100,15 @@ class Trial:
             f"\n\tsubject_id = {self.info.subject_id}"
             f"\n\tpath_save_figures = {self.info.path_save_figures}"
             f"\n\tpath_save_trial = {self.info.path_save_trial}"
-            f"\n\tchannels {channel_info}"
+            f"\n\tchannel_info {channel_info}"
         )
+
+    def get_short_channel_info(self) -> list:
+        result = []
+        for k, v in self.channel_dict.items():
+            result.append((k, v.type.value))
+
+        return result
 
     def get_safe_path_pickle(self) -> pathlib.Path:
         pickle_file = self.info.path_save_trial / (self.info.name + ".pkl")
@@ -111,34 +125,36 @@ class Trial:
             path_to_check=trial_info.path_save_trial,
             path_to_make=Path(trial_info.file).parent / "data",
         )
-        self.info = TrialInfo(
-            file=trial_info.file,
-            channels=trial_info.channels,
-            name=name,
-            subject_id=subject_id,
-            path_save_figures=path_save_figures,
-            path_save_trial=path_save_trial,
-        )
+        self.info.file = trial_info.file
+        self.info.channel_names = trial_info.channel_names
+        self.info.name = name
+        self.info.subject_id = subject_id
+        self.info.path_save_figures = path_save_figures
+        self.info.path_save_trial = path_save_trial
+
+    def add(self, name: str, ch: Channel):
+        self.channel_dict[name] = ch
+        setattr(self, name, ch)
+
+    def remove(self, id: Union[str, Channel]):
+        if isinstance(id, str):
+            del self.channel_dict[id]
+            delattr(self, id)
 
     def _parse_trial_data(self):
 
         trial_data = self._import_trial_data()
-        channel_names = list()
         for key, value in trial_data.items():
             channel_type = value['ch_type']
-            channel_names.append((key, channel_type))
+            Ch = Channel.get_channel_generator(enm=EnumChannelTypes(channel_type))
+            Ch: Channel
             value["path_save_figures"] = self.info.path_save_figures
             value["trial_name"] = self.info.name
             value["subject_id"] = self.info.subject_id
-            setattr(
-                self,
-                key,
-                Channel.get_channel_generator(enm=EnumChannelTypes(channel_type))(key, value),
-            )
-        self.channels = channel_names
+            self.add(key, Ch(key, value))
 
     def _import_trial_data(self):
-        return read.read(self.info.file, self.info.channels)
+        return read.read(self.info.file, self.info.channel_names)
 
     def plot(self, save: Literal[True, False] = None) -> None:
         plot.plot_trial(self, save=save)
@@ -190,4 +206,7 @@ def load(file: Union[Path, str]) -> Trial:
 
     """
     with open(file, "rb") as trial_file:
-        return pickle.load(trial_file)
+        tt = pickle.load(trial_file)
+        tt: Trial
+        tt.info.file = pathlib.Path(file)
+        return tt

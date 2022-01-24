@@ -10,7 +10,7 @@ from spike2py.trial import TrialInfo, Trial
 def test_waveform(physiology_data):
     trial_info = TrialInfo(physiology_data)
     physiology = Trial(trial_info)
-    physiology.Abdo.plot()
+    physiology.abdo.plot()
     return plt.gcf()
 
 
@@ -61,5 +61,5 @@ def test_entire_trial2(motor_units_data):
 def test_wavemark(motor_units_data):
     trial_info = TrialInfo(motor_units_data)
     motor_units = Trial(trial_info)
-    motor_units.Mu2.plot()
+    motor_units.MU2.plot()
     return plt.gcf()

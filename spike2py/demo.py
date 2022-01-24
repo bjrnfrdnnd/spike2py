@@ -14,17 +14,17 @@ def test_install():
     info = trial.TrialInfo(file=demo_data_local)
     sample = trial.Trial(info)
     print(
-        "\nFigure 1: sample.Flow.plot()\n"
-        "Figure 2: sample.Flow.lowpass(cutoff=4, order=8).plot()\n"
-        "Figure 3: sample.Volume.plot()\n"
-        "Figure 4: sample.Volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()\n"
+        "\nFigure 1: sample.flow.plot()\n"
+        "Figure 2: sample.flow.lowpass(cutoff=4, order=8).plot()\n"
+        "Figure 3: sample.volume.plot()\n"
+        "Figure 4: sample.volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()\n"
         "Figure 5: sample.plot()\n"
     )
     plt.close("all")
-    sample.Flow.plot()
-    sample.Flow.lowpass(cutoff=4, order=8).plot()
-    sample.Volume.plot()
-    sample.Volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()
+    sample.flow.plot()
+    sample.flow.lowpass(cutoff=4, order=8).plot()
+    sample.volume.plot()
+    sample.volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()
     sample.plot()
 
 

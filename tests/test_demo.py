@@ -17,10 +17,10 @@ def test_install(capsys):
     demo.test_install()
     captured = capsys.readouterr()
     assert captured.out == (
-        "\nFigure 1: sample.Flow.plot()\n"
-        "Figure 2: sample.Flow.lowpass(cutoff=4, order=8).plot()\n"
-        "Figure 3: sample.Volume.plot()\n"
-        "Figure 4: sample.Volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()\n"
+        "\nFigure 1: sample.flow.plot()\n"
+        "Figure 2: sample.flow.lowpass(cutoff=4, order=8).plot()\n"
+        "Figure 3: sample.volume.plot()\n"
+        "Figure 4: sample.volume.remove_mean().linear_detrend().lowpass(cutoff=5).plot()\n"
         "Figure 5: sample.plot()\n\n"
     )
 
@@ -28,4 +28,4 @@ def test_install(capsys):
 def test_tutorial_data(tutorial_data_dict):
     actual = demo.tutorial_data()
     assert actual.info.file == tutorial_data_dict["file"]
-    assert actual.channels == tutorial_data_dict["channels"]
+    assert actual.get_short_channel_info() == tutorial_data_dict["channels"]

@@ -8,7 +8,7 @@ import scipy.io as sio
 import matplotlib.pyplot as plt
 
 from spike2py import channels, sig_proc
-
+from spike2py.enums import EnumChannelTypes
 
 ACTION_POTENTIALS = [[random.random() for i in range(62)] for _ in range(3)]
 PAYLOADS_DIR = Path(__file__).parent / "payloads"
@@ -17,7 +17,7 @@ EVENT = {
     "name": "stimulator",
     "data_dict": {
         "times": np.array([7.654, 7.882]),
-        "ch_type": "event",
+        "ch_type": EnumChannelTypes.EVENT.value,
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
@@ -28,7 +28,7 @@ KEYBOARD = {
     "data_dict": {
         "codes": ["t", "a", "5"],
         "times": np.array([1.34, 100.334]),
-        "ch_type": "keyboard",
+        "ch_type": EnumChannelTypes.KEYBOARD.value,
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
@@ -41,7 +41,7 @@ WAVEFORM = {
         "units": "Volts",
         "values": np.array([32, 23, 65, 67, 46, 91, 29, 44]) / 1000,
         "sampling_frequency": 2048,
-        "ch_type": "waveform",
+        "ch_type": EnumChannelTypes.WAVEFORM.value,
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
@@ -54,7 +54,7 @@ WAVEMARK = {
         "times": np.array([7.432, 7.765, 7.915]),
         "sampling_frequency": 10240,
         "action_potentials": ACTION_POTENTIALS,
-        "ch_type": "wavemark",
+        "ch_type": EnumChannelTypes.WAVEMARK.value,
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
@@ -94,11 +94,12 @@ def data_setup():
 
 @pytest.fixture()
 def channels_init():
+    ECTs = EnumChannelTypes
     return {
-        "event": EVENT,
-        "keyboard": KEYBOARD,
-        "waveform": WAVEFORM,
-        "wavemark": WAVEMARK,
+        ECTs.EVENT: EVENT,
+        ECTs.KEYBOARD: KEYBOARD,
+        ECTs.WAVEFORM: WAVEFORM,
+        ECTs.WAVEMARK: WAVEMARK,
     }
 
 
@@ -112,8 +113,8 @@ def channels_mock():
             subject_id="Yoda",
         ),
         "times": np.array([7.654, 7.882]),
-        "ch_type": "keyboard",
-        "__repr__": "Event channel",
+        "ch_type": EnumChannelTypes.EVENT.value,
+        "__repr__": f'{EnumChannelTypes.EVENT.value} channel'
     }
     keyboard = {
         "info": channels.ChannelInfo(
@@ -124,8 +125,8 @@ def channels_mock():
         ),
         "codes": ["t", "a", "5"],
         "times": np.array([1.34, 100.334]),
-        "ch_type": "keyboard",
-        "__repr__": "Keyboard channel",
+        "ch_type": EnumChannelTypes.KEYBOARD.value,
+        "__repr__": f'{EnumChannelTypes.KEYBOARD.value} channel',
     }
     waveform = {
         "info": channels.ChannelInfo(
@@ -138,8 +139,8 @@ def channels_mock():
         ),
         "times": np.arange(0, 2, 0.25),
         "values": np.array([32, 23, 65, 67, 46, 91, 29, 44]) / 1000,
-        "ch_type": "waveform",
-        "__repr__": "Waveform channel",
+        "ch_type": EnumChannelTypes.WAVEFORM.value,
+        "__repr__": f'{EnumChannelTypes.WAVEFORM.value} channel',
     }
     wavemark = {
         "info": channels.ChannelInfo(
@@ -152,15 +153,16 @@ def channels_mock():
         ),
         "times": np.array([7.432, 7.765, 7.915]),
         "action_potentials": ACTION_POTENTIALS,
-        "ch_type": "wavemark",
+        "ch_type": EnumChannelTypes.WAVEMARK.value,
         "instantaneous_firing_frequency": np.array([3.003003, 6.6666667]),
-        "__repr__": "Wavemark channel",
+        "__repr__": f'{EnumChannelTypes.WAVEMARK.value} channel',
     }
+    ECTs = EnumChannelTypes
     return {
-        "event": event,
-        "keyboard": keyboard,
-        "waveform": waveform,
-        "wavemark": wavemark,
+        ECTs.EVENT: event,
+        ECTs.KEYBOARD: keyboard,
+        ECTs.WAVEFORM: waveform,
+        ECTs.WAVEMARK: wavemark,
     }
 
 
@@ -243,7 +245,7 @@ def _remove_files_in_folder_in_payloads_dir(folder):
 def trial_info_dict():
     yield {
         "file": PATH_TO_MAT_FILES[1],
-        "channels": ["K_angle", "K_torque", "Prox_EMG"],
+        "channel_names": ["k_angle", "k_torque", "prox_EMG"],
         "name": "TREMOR",
         "subject_id": "ET01",
         "path_save_figures": PAYLOADS_DIR / "trial_figures",
@@ -278,14 +280,15 @@ def motor_units_data():
 @pytest.fixture()
 def tutorial_data_dict():
     tmp = os.getenv("TMP", "/tmp")
+    ECTs = EnumChannelTypes
     yield {
         "file": Path(tmp) / "motor_units.mat",
         "channels": [
-            ("Dia_Smu", "waveform"),
-            ("Mu2", "wavemark"),
-            ("Flow", "waveform"),
-            ("Volume", "waveform"),
-            ("Co2", "waveform"),
-            ("Mu1", "wavemark"),
+            ("DIA_SMU", ECTs.WAVEFORM.value),
+            ("MU2", ECTs.WAVEMARK.value),
+            ("flow", ECTs.WAVEFORM.value),
+            ("volume", ECTs.WAVEFORM.value),
+            ("CO2", ECTs.WAVEFORM.value),
+            ("MU1", ECTs.WAVEMARK.value),
         ],
     }

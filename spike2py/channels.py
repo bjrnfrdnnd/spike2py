@@ -1,11 +1,13 @@
+from __future__ import annotations
 import sys
 from pathlib import Path
-from typing import NamedTuple, Literal
+from typing import NamedTuple, Literal, Optional
 
 import numpy as np
 
 import spike2py.plot as plot
 import spike2py.sig_proc as sig_proc
+from spike2py.ABC import ChannelInfoA, ChannelA
 from spike2py.enums import EnumChannelTypes
 
 from spike2py.types import (
@@ -15,8 +17,10 @@ from spike2py.types import (
     parsed_keyboard,
 )
 
+class ChannelInfoMeta(type(NamedTuple), type(ChannelInfoA)):
+    pass
 
-class ChannelInfo(NamedTuple):
+class ChannelInfo(NamedTuple, ChannelInfoA, metaclass=ChannelInfoMeta):
     """Information about channel
 
     See :class:`spike2py.channels.Channel` parameters for details.
@@ -30,7 +34,7 @@ class ChannelInfo(NamedTuple):
     subject_id: str = None
 
 
-class Channel:
+class Channel(ChannelA):
     """Base class for all channel types
 
     Parameters
@@ -55,17 +59,26 @@ class Channel:
     def __init__(self, channel_info: ChannelInfo, times: np.ndarray) -> None:
         self.info = channel_info
         self.times = times
+        self.values = np.array([])
+        self.raw_values = self.values
+        self.path_save_figures: Optional[Path] = None
         self.type = EnumChannelTypes.UNSET
+        self.name: Optional[str] = channel_info.name
 
     @classmethod
-    def get_channel_generator(cls, enm: EnumChannelTypes):
-        result = None
+    def get_channel_generator(cls, enm: EnumChannelTypes) -> Channel:
         thismodule = sys.modules[__name__]
         result = getattr(thismodule, enm.value.title())
         return result
 
-    def __repr__(self):
-        return f'{self.type.value} channel'
+    @classmethod
+    def get_repr(cls, enm: EnumChannelTypes) -> str:
+        result = f'{enm.value} channel'
+        return result
+
+    def __repr__(self) -> str:
+        result = self.get_repr(enm=self.type)
+        return result
 
 
 class Event(Channel):
@@ -88,11 +101,11 @@ class Event(Channel):
         super().__init__(
             ChannelInfo(
                 name=name,
-                path_save_figures=data_dict["path_save_figures"],
-                trial_name=data_dict["trial_name"],
-                subject_id=data_dict["subject_id"],
+                path_save_figures=data_dict.get("path_save_figures", None),
+                trial_name=data_dict.get("trial_name", None),
+                subject_id=data_dict.get("subject_id", None),
             ),
-            data_dict["times"],
+            data_dict.get("times", None),
         )
         self.type = EnumChannelTypes.EVENT
 
@@ -126,16 +139,16 @@ class Keyboard(Channel):
     """
 
     def __init__(self, name: str, data_dict: parsed_keyboard) -> None:
-        self.codes = data_dict["codes"]
         super().__init__(
             ChannelInfo(
                 name=name,
-                path_save_figures=data_dict["path_save_figures"],
-                trial_name=data_dict["trial_name"],
-                subject_id=data_dict["subject_id"],
+                path_save_figures=data_dict.get("path_save_figures", None),
+                trial_name=data_dict.get("trial_name", None),
+                subject_id=data_dict.get("subject_id", None),
             ),
-            data_dict["times"],
+            data_dict.get("times", None),
         )
+        self.codes = data_dict.get("codes", None)
         self.type = EnumChannelTypes.KEYBOARD
 
     def plot(self, save: Literal[True, False] = False) -> None:
@@ -171,19 +184,19 @@ class Waveform(Channel, sig_proc.SignalProcessing):
     """
 
     def __init__(self, name: str, data_dict: parsed_waveform) -> None:
-        self.values = data_dict["values"]
-        self.raw_values = self.values
         super().__init__(
             ChannelInfo(
                 name=name,
-                units=data_dict["units"],
-                sampling_frequency=data_dict["sampling_frequency"],
-                path_save_figures=data_dict["path_save_figures"],
-                trial_name=data_dict["trial_name"],
-                subject_id=data_dict["subject_id"],
+                units=data_dict.get("units", None),
+                sampling_frequency=data_dict.get("sampling_frequency", None),
+                path_save_figures=data_dict.get("path_save_figures", None),
+                trial_name=data_dict.get("trial_name", None),
+                subject_id=data_dict.get("subject_id", None),
             ),
-            data_dict["times"],
+            data_dict.get("times", None),
         )
+        self.values = data_dict.get("values", None)
+        self.raw_values = self.values
         self.type = EnumChannelTypes.WAVEFORM
 
     def plot(self, save: Literal[True, False] = None) -> None:
@@ -222,15 +235,15 @@ class Wavemark(Channel):
         super().__init__(
             ChannelInfo(
                 name=name,
-                units=data_dict["units"],
-                sampling_frequency=data_dict["sampling_frequency"],
-                path_save_figures=data_dict["path_save_figures"],
-                trial_name=data_dict["trial_name"],
-                subject_id=data_dict["subject_id"],
+                units=data_dict.get("units", None),
+                sampling_frequency=data_dict.get("sampling_frequency", None),
+                path_save_figures=data_dict.get("path_save_figures", None),
+                trial_name=data_dict.get("trial_name", None),
+                subject_id=data_dict.get("subject_id", None),
             ),
-            data_dict["times"],
+            data_dict.get("times", None),
         )
-        self.action_potentials = data_dict["action_potentials"]
+        self.action_potentials = data_dict.get("action_potentials", None)
         self._calc_instantaneous_firing_frequency()
         self.type = EnumChannelTypes.WAVEMARK
 
