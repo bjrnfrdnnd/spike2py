@@ -43,10 +43,10 @@ class Trial(TrialA):
 
     Parameters
     ----------
-    trial_info : NamedTuple
+    trial_info : dataclass (TrialInfo)
         file : pathlib.Path, str
             Absolute path to data file. Only .mat files supported
-        channels : List[str]
+        channel_names : List[str]
             List of channel names, as they appeared in the original .smr file
             Example: ['biceps', 'triceps', 'torque']
             If not included, all channels will be processed
@@ -63,11 +63,12 @@ class Trial(TrialA):
 
     Attributes
     ----------
-    trial_info : NamedTuple
-        Same as parameter
-    channels : List[Tuple[str, str]]
-        Pairs of channel names and channel types.
-        For example: [('Torque', 'waveform'), ('Trigger', 'event')]
+    info : dataclass (TrialInfo)
+        Same as parameter trial_info
+    channel_dict : dict
+        dict of
+          key: channel names
+          value: channels.Channel
     <Channels> : channels.Channel
         Each channel appears with its name as an attribute.
         For example: trial1.Torque
