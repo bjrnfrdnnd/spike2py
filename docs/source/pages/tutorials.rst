@@ -22,12 +22,12 @@ Part 2. Inspect the tutorial dataset
 
 Our tutorial dataset has six channels:
 
-* Dia_Smu
-* Flow
-* Volume
-* Co2
-* Mu1
-* Mu2
+* DIA_SMU
+* flow
+* volume
+* CO2
+* MU1
+* MU2
 
 In your Python interactive shell, type `tutorial.` and hit the tab key.
 This will show you the various attributes and methods that belong to `tutorial`.

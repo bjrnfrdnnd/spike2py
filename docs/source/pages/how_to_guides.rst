@@ -57,7 +57,7 @@ If we import `TrialInfo` and create an instance with no inputs, we get the follo
     >>> trial_info
     TrialInfo(
 	    file=None,
-	    channels=None,
+	    channel_names=None,
 	    name=None,
 	    subject_id=None,
 	    path_save_figures=None,
@@ -71,7 +71,7 @@ If we pass inputs to `TrialInfo`, we might get something like this:
     >>> trial_info
     TrialInfo(
 	    file='tremor_postural.mat',
-	    channels=['Flow', 'Co2'],
+	    channel_names=['flow', 'Co2'],
 	    name='fatigue_50max',
 	    subject_id='sub001',
 	    path_save_figures='/home/martin/Desktop/figures',
@@ -84,16 +84,16 @@ Specify channels to import
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 There may be times when we don't want to import all available channels. We can specify the channels we want to import by passing a list of channel names to TrialInfo.
 
-For example, the following code imports only the `Flow`, and `Co2` channels from `tutorial.mat`:
+For example, the following code imports only the `flow`, and `Co2` channels from `tutorial.mat`:
 
 .. code-block:: python
 
     >>> from spike2py.trial import TrialInfo, Trial
-    >>> channels = ['Flow', 'Co2']
-    >>> trial_info = TrialInfo(file='tutorial.mat', channels=channels)
+    >>> channel_names = ['flow', 'Co2']
+    >>> trial_info = TrialInfo(file='tutorial.mat', channel_names=channel_names)
     >>> tutorial = Trial(trial_info)
-    >>> tutorial.channels
-        [('Flow', 'waveform'), ('Co2', 'waveform')]
+    >>> tutorial.get_short_channel_info()
+        [('flow', 'waveform'), ('Co2', 'waveform')]
 
 Note that we need to use the same spelling and capitalisation that we used in our Spike2 channel names.
 
@@ -146,13 +146,13 @@ As was demonstrated in the :ref:`tutorial`, signal processing steps can be chain
 
 .. code-block:: python
 
-    >>> tutorial.Flow.remove_mean().lowpass(cutoff=5).rect()
+    >>> tutorial.flow.remove_mean().lowpass(cutoff=5).rect()
 
 And in case we want to compare processed and unprocessed data, or have them available for plotting, **spike2py** automatically creates a copy of the data and assigns it an informative name prior to applying each signal processing step.
 
-Let's consider the processing we just applied to the `Flow` channel of the tutorial trial. When we first start, there is a `values` attribute and a `raw_values` attribute, and these are the same.
+Let's consider the processing we just applied to the `flow` channel of the tutorial trial. When we first start, there is a `values` attribute and a `raw_values` attribute, and these are the same.
 
-.. image:: ../img/Flow_1.png
+.. image:: ../img/flow_1.png
    :width: 500
    :align: center
 
@@ -160,7 +160,7 @@ However, each signal processing step updates `values`. That is, `values` is alwa
 
 At the same time, we might want to access the original raw signal. This is available in `raw_values`. Similarly, we have access to our waveform at each step of the processing pipeline. **spike2py** creates a copy of the waveform at each processing step and adds it as an attribute to the channel. This is done when we apply signal processing steps one at a time or all together as part of a chain. The names of these attributes all start with `proc_`. For example, here is what is available after we apply the processing pipeline from above:
 
-.. image:: ../img/Flow_2.png
+.. image:: ../img/flow_2.png
    :width: 500
    :align: center
 
