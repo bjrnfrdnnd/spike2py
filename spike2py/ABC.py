@@ -41,6 +41,7 @@ class TrialInfoA(ABC):
 
 class TrialA(ABC):
     channel_dict: dict
+
     @abstractmethod
     def __init__(self, trial_info: TrialInfoA) -> None:
         pass

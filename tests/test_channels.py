@@ -18,7 +18,6 @@ def test_channels_event_init(channels_init, channels_mock):
     assert list(ch.times) == list(channels_mock[ch_type]["times"])
     assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions
 
-
 def test_channels_keyboard_init(channels_init, channels_mock):
     ECTs = EnumChannelTypes
     ch_type = ECTs.KEYBOARD

@@ -12,6 +12,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behaviour:
+
 ```python
 >>> from spike2py import TrialInfo, Trial
 >>> post_fatigue_info = TrialInfo(file='post_fatigue.mat')
