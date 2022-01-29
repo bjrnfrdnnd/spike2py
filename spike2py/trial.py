@@ -93,7 +93,7 @@ class Trial(TrialA):
         channel_text = list()
         for k, v in self.channel_dict.items():
             v: Channel
-            channel_text.append(f"\n\t\t{k} ({v.type.value})")
+            channel_text.append(f"\n\t\t{k} ({v.type})")
         channel_info = "".join(channel_text)
         return (
             f"\n{self.info.name}"
@@ -107,7 +107,7 @@ class Trial(TrialA):
     def get_short_channel_info(self) -> list:
         result = []
         for k, v in self.channel_dict.items():
-            result.append((k, v.type.value))
+            result.append((k, v.type))
 
         return result
 
@@ -150,7 +150,7 @@ class Trial(TrialA):
         trial_data = self._import_trial_data()
         for key, value in trial_data.items():
             channel_type = value['ch_type']
-            Ch = Channel.get_channel_generator(enm=EnumChannelTypes(channel_type))
+            Ch = Channel.get_channel_generator(ch_type=channel_type)
             Ch: Channel
             value["path_save_figures"] = self.info.path_save_figures
             value["trial_name"] = self.info.name

@@ -1,10 +1,11 @@
 from pathlib import Path
 import textwrap
-from typing import List, Final
+from typing import List, Final, Optional
 
 import scipy.io as sio
 import numpy as np
 
+from spike2py.enums import EnumChannelTypes
 from spike2py.types import (
     mat_data,
     parsed_wavemark,
@@ -61,6 +62,12 @@ def read(file: Path, channels: List[str] = None) -> parsed_spike2py_data:
         )
     return _parse_mat_data(_read_mat(file, channels))
 
+def _read_str(npa: np.ndarray) -> Optional[str]:
+    npa_flattened = _flatten_array(npa)
+    strng = None
+    if npa_flattened.size > 0:
+        strng = npa_flattened[0]
+    return strng
 
 def _read_mat(mat_file: Path, channels: List[str]) -> mat_data:
     """Read Spike2 data exported to a Matlab .mat file
@@ -130,7 +137,8 @@ def _parse_mat_events(mat_events: np.ndarray) -> parsed_event:
 
     return {
         "times": _flatten_array(mat_events["times"]),
-        "ch_type": "event",
+        "ch_type": EnumChannelTypes.EVENT.value,
+        'comment': _read_str(mat_events['comment']),
     }
 
 
@@ -159,7 +167,8 @@ def _parse_mat_keyboard(mat_keyboard: np.ndarray) -> parsed_keyboard:
     return {
         "codes": characters,
         "times": _flatten_array(mat_keyboard["times"]),
-        "ch_type": "keyboard",
+        "ch_type": EnumChannelTypes.KEYBOARD.value,
+        'comment': _read_str(mat_keyboard['comment']),
     }
 
 
@@ -186,6 +195,7 @@ def _keyboard_codes_to_characters(keyboard_codes: List[int]) -> List[str]:
     ]
 
 
+
 def _parse_mat_waveform(mat_waveform: np.ndarray) -> parsed_waveform:
     """Parse waveform channel data as exported by Spike2 to .mat
 
@@ -199,10 +209,8 @@ def _parse_mat_waveform(mat_waveform: np.ndarray) -> parsed_waveform:
     dict
         Data from waveform channel.
     """
-    units_flattened = _flatten_array(mat_waveform["units"])
-    units = None
-    if units_flattened.size > 0:
-        units = units_flattened[0]
+    units = _read_str(mat_waveform["units"])
+    comment = _read_str(mat_waveform["comment"])
     times = _flatten_array(mat_waveform["times"])
     values = _flatten_array(mat_waveform["values"])
     shortest_array = min(len(times), len(values))
@@ -211,7 +219,8 @@ def _parse_mat_waveform(mat_waveform: np.ndarray) -> parsed_waveform:
         "units": units,
         "values": values[:shortest_array],
         "sampling_frequency": int(1 / _flatten_array(mat_waveform["interval"])),
-        "ch_type": "waveform",
+        "ch_type": EnumChannelTypes.WAVEFORM.value,
+        'comment': comment,
     }
 
 
@@ -234,6 +243,7 @@ def _parse_mat_wavemark(mat_wavemark: np.ndarray) -> parsed_wavemark:
     sampling_frequency = None
     action_potentials = None
 
+    comment = _read_str(mat_wavemark["comment"])
     units_flattened = _flatten_array(mat_wavemark["units"])
 
     if units_flattened.size > 0:
@@ -246,7 +256,8 @@ def _parse_mat_wavemark(mat_wavemark: np.ndarray) -> parsed_wavemark:
         "times": times,
         "sampling_frequency": sampling_frequency,
         "action_potentials": action_potentials,
-        "ch_type": "wavemark",
+        "ch_type": EnumChannelTypes.WAVEMARK.value,
+        'comment': comment,
     }
 
 

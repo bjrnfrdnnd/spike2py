@@ -70,6 +70,10 @@ def test_parse_mat_waveform_units(data_setup):
     actual = read._parse_mat_waveform(data_setup["mat_waveform"])["units"]
     assert actual == "deg"
 
+def test_parse_mat_waveform_comment(data_setup):
+    actual = read._parse_mat_waveform(data_setup["mat_waveform"])["comment"]
+    assert actual is None
+
 
 def test_parse_mat_waveform_sampling_frequency(data_setup):
     actual = read._parse_mat_waveform(data_setup["mat_waveform"])["sampling_frequency"]

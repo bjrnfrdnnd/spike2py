@@ -21,6 +21,7 @@ EVENT = {
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
+        'comment': 'event comment',
     },
 }
 KEYBOARD = {
@@ -32,6 +33,7 @@ KEYBOARD = {
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
+        'comment': 'keyboard comment',
     },
 }
 WAVEFORM = {
@@ -45,6 +47,7 @@ WAVEFORM = {
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
+        'comment': 'waveform comment',
     },
 }
 WAVEMARK = {
@@ -58,6 +61,7 @@ WAVEMARK = {
         "path_save_figures": Path("."),
         "trial_name": "strong_you_are",
         "subject_id": "Yoda",
+        'comment': 'wavemark comment',
     },
 }
 
@@ -108,6 +112,7 @@ def channels_mock():
     event = {
         "info": channels.ChannelInfo(
             name="stimulator",
+            comment='event comment',
             path_save_figures=Path("."),
             trial_name="strong_you_are",
             subject_id="Yoda",
@@ -119,6 +124,7 @@ def channels_mock():
     keyboard = {
         "info": channels.ChannelInfo(
             name="keyboard",
+            comment='keyboard comment',
             path_save_figures=Path("."),
             trial_name="strong_you_are",
             subject_id="Yoda",
@@ -132,6 +138,7 @@ def channels_mock():
         "info": channels.ChannelInfo(
             name="biceps",
             units="Volts",
+            comment='waveform comment',
             sampling_frequency=2048,
             path_save_figures=Path("."),
             trial_name="strong_you_are",
@@ -146,6 +153,7 @@ def channels_mock():
         "info": channels.ChannelInfo(
             name="MG",
             units="Volts",
+            comment='wavemark comment',
             sampling_frequency=10240,
             path_save_figures=Path("."),
             trial_name="strong_you_are",

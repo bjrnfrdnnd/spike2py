@@ -22,7 +22,7 @@ def test_bla(trial_default):
     ch1 = None
     for v in actual.channel_dict.values():
         v: Channel
-        if v.type == EnumChannelTypes.WAVEFORM:
+        if v.type == EnumChannelTypes.WAVEFORM.value:
             ch1 = v
 
 

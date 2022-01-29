@@ -20,12 +20,12 @@ class ChannelA(ABC):
 
     @classmethod
     @abstractmethod
-    def get_repr(cls, enm: EnumChannelTypes) -> str:
+    def get_repr(cls, ch_type: str) -> str:
         pass
 
     @classmethod
     @abstractmethod
-    def get_channel_generator(cls, enm: EnumChannelTypes) -> ChannelA:
+    def get_channel_generator(cls, ch_type: str) -> ChannelA:
         pass
 
     @abstractmethod

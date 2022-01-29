@@ -47,6 +47,7 @@ def test_channels_waveform_init(channels_init, channels_mock):
     assert ch.info.units == channels_mock[ch_type]["info"].units
     assert list(ch.values) == list(channels_mock[ch_type]["values"])
     assert (ch.info.sampling_frequency == channels_mock[ch_type]["info"].sampling_frequency)
+    assert (ch.info.comment == channels_mock[ch_type]["info"].comment)
     assert repr(ch) == ch.get_repr2() # Actually, this does not check anything. We leave it nonetheless, to remain coherent with previous versions
 
 

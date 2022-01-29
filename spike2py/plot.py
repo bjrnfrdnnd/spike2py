@@ -50,14 +50,14 @@ def plot_channel(spike2py_channel: all_channels, save: Literal[True, False]) -> 
     if len(spike2py_channel.times) == 0:
         print("{spike2py_channel.info.name} channel has no data to plot.")
         return
-    channel_type = repr(spike2py_channel).split()[0]
-    if channel_type == "Waveform":
+    channel_type = repr(spike2py_channel).split()[1]
+    if channel_type == EnumChannelTypes.WAVEFORM.value:
         # Split axis generation and plotting to allow reuse of plotting with trial plotting
         fig, ax = plt.subplots(figsize=WAVEFORM_FIG_SIZE)
         _plot_waveform(spike2py_channel, ax)
     else:
         ticks_line = _TicksLine(spike2py_channel)
-        if ticks_line.ch_type == "Wavemark":
+        if ticks_line.ch_type == EnumChannelTypes.WAVEMARK.value:
             fig, ax = plt.subplots(
                 1, 2, figsize=FIG_SIZE, gridspec_kw={"width_ratios": [3, 1]}
             )
@@ -125,7 +125,7 @@ class _TicksLine:
         self.color = color
         self.offset = y_offset
 
-        self.ch_type = repr(ticks_line_channel).split()[0]
+        self.ch_type = repr(ticks_line_channel).split()[1]
         self.line_start_end = (self.ch.times[0], self.ch.times[-1])
         self.line_y_vals = (0.5 + y_offset, 0.5 + y_offset)
         self.tick_y_vals = (0.2 + y_offset, 0.8 + y_offset)
@@ -212,14 +212,14 @@ def _fig_height_n_subplots(spike2py_trial: TrialA) -> Tuple[int, int]:
         current_channel: Channel
 
         if (
-            (current_channel.type in [ECTs.EVENT, ECTs.KEYBOARD, ECTs.WAVEMARK])
+            (current_channel.type in [e.value for e in [ECTs.EVENT, ECTs.KEYBOARD, ECTs.WAVEMARK]])
             and (not plottable_ticks_line)
             and (len(current_channel.times) != 0)
         ):
             fig_height += 2
             plottable_ticks_line = True
             n_subplots += 1
-        elif current_channel.type == ECTs.WAVEFORM:
+        elif current_channel.type == ECTs.WAVEFORM.value:
             fig_height += 2
             n_subplots += 1
     fig_height = min(fig_height, MAX_TRIAL_FIG_HEIGHT)
@@ -234,7 +234,7 @@ def _plot_trial(spike2py_trial: TrialA, ax: Subplot):
     for k, v in spike2py_trial.channel_dict.items():
         current_channel = v
         current_channel: Channel
-        if current_channel.type == ECTs.WAVEFORM:
+        if current_channel.type == ECTs.WAVEFORM.value:
             current_channel: Waveform
             _plot_waveform(
                 waveform=current_channel,
