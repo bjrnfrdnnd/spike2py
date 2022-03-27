@@ -27,7 +27,7 @@ class TrialInfo(TrialInfoA):
 
     def __repr__(self):
         return (
-            f"TrialInfo(\n"
+            f"{__class__.__name__}(\n"
             f"\tfile={repr(self.file)},\n"
             f"\tchannels={repr(self.channel_names)},\n"
             f"\tname={repr(self.name)}, \n"
