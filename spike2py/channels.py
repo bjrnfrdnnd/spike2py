@@ -17,6 +17,7 @@ from spike2py.types import (
     parsed_keyboard,
 )
 
+
 class ChannelInfoMeta(type(NamedTuple), type(ChannelInfoA)):
     pass
 
