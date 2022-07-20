@@ -8,6 +8,7 @@ import numpy as np
 
 import spike2py.plot as plot
 import spike2py.sig_proc as sig_proc
+from spike2py.ABC import ChannelA, WaveformA
 from spike2py.enums import EnumChannelTypes
 from spike2py.types import (
     parsed_wavemark,
@@ -32,7 +33,7 @@ class ChannelInfo(NamedTuple):
     subject_id: str = None
 
 
-class Channel:
+class Channel(ChannelA):
     # noinspection SpellCheckingInspection
     """Base class for all channel types
 
@@ -169,7 +170,7 @@ class Keyboard(Channel):
         return self
 
 
-class Waveform(Channel, sig_proc.SignalProcessing):
+class Waveform(Channel, WaveformA, sig_proc.SignalProcessing):
     """Waveform channel class
 
     Inherits from Channel and sig_proc.SignalProcessing

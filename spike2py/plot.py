@@ -6,9 +6,8 @@ import numpy as np
 # noinspection PyProtectedMember
 from matplotlib.axes._subplots import Subplot
 
-from spike2py.channels import Channel, Waveform, ChannelInfo
+from spike2py.ABC import ChannelA, ChannelInfoA, TrialA, WaveformA
 from spike2py.enums import EnumChannelTypes
-from spike2py.trial import Trial
 from spike2py.types import all_channels, ticksline_channels
 
 LINE_WIDTH = 2
@@ -77,7 +76,7 @@ def _get_color(index: int) -> str:
 
 
 def _plot_waveform(
-    waveform: Waveform,
+    waveform: WaveformA,
     ax: Subplot,
     color: str = _get_color(0),
 ) -> None:
@@ -90,7 +89,7 @@ def _plot_waveform(
     ax.grid()
 
 
-def _save_plot(channel_info: ChannelInfo) -> None:
+def _save_plot(channel_info: ChannelInfoA) -> None:
     fig_name = (
         f"{channel_info.subject_id}_"
         f"{channel_info.trial_name}_"
@@ -182,7 +181,7 @@ class _TicksLine:
         ax1.grid()
 
 
-def plot_trial(spike2py_trial: Trial, save: Literal[True, False]) -> None:
+def plot_trial(spike2py_trial: TrialA, save: Literal[True, False]) -> None:
     fig_height, n_subplots = _fig_height_n_subplots(spike2py_trial)
     if n_subplots == 1:
         print(
@@ -201,7 +200,7 @@ def plot_trial(spike2py_trial: Trial, save: Literal[True, False]) -> None:
         _save_plot(spike2py_trial.name)
 
 
-def _fig_height_n_subplots(spike2py_trial: Trial) -> Tuple[int, int]:
+def _fig_height_n_subplots(spike2py_trial: TrialA) -> Tuple[int, int]:
     """Determine height and number of subplots to plot trial.
 
     Event, Keyboard and Wavemark channels are all plotted on same subplot at the top of the figure.
@@ -213,7 +212,7 @@ def _fig_height_n_subplots(spike2py_trial: Trial) -> Tuple[int, int]:
     ECTs = EnumChannelTypes
     for k, v in spike2py_trial.channel_dict.items():
         current_channel = v
-        current_channel: Channel
+        current_channel: ChannelA
 
         if (
             (current_channel.type in [e.value for e in [ECTs.EVENT, ECTs.KEYBOARD, ECTs.WAVEMARK]])
@@ -230,7 +229,7 @@ def _fig_height_n_subplots(spike2py_trial: Trial) -> Tuple[int, int]:
     return fig_height, n_subplots
 
 
-def _plot_trial(spike2py_trial: Trial, ax: Subplot):
+def _plot_trial(spike2py_trial: TrialA, ax: Subplot):
     waveform_counter = 1
     other_ch_counter = 0
     n_subplots = len(ax)
@@ -238,9 +237,9 @@ def _plot_trial(spike2py_trial: Trial, ax: Subplot):
     ECTs = EnumChannelTypes
     for k, v in spike2py_trial.channel_dict.items():
         current_channel = v
-        current_channel: Channel
+        current_channel: ChannelA
         if current_channel.type == ECTs.WAVEFORM.value:
-            current_channel: Waveform
+            current_channel: WaveformA
             _plot_waveform(
                 waveform=current_channel,
                 ax=ax[n_subplots - waveform_counter],

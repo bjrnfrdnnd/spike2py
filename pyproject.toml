@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spike2py"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = ["Björn Nadrowski <bjrnfrdnnd@gmail.com>"]
 

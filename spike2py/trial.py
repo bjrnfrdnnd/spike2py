@@ -3,13 +3,12 @@ import pickle
 import typing
 from dataclasses import dataclass
 from pathlib import Path
-# from typing import NamedTuple, List, Literal, Union
 from typing import List, Literal, Union
 
 from spike2py import read, plot
-from spike2py.ABC2 import TrialA, TrialInfoA
+from spike2py.ABC import TrialInfoA, TrialA
 from spike2py.channels import Channel
-from spike2py.enums import EnumChannelTypes
+from spike2py.types import parsed_spike2py_data
 
 
 @dataclass
@@ -40,46 +39,47 @@ class TrialInfo(TrialInfoA):
 
 
 class Trial(TrialA):
+    # noinspection GrazieInspection
     """Class for experimental trial recorded using Spike2
 
-    Parameters
-    ----------
-    trial_info : dataclass (TrialInfo)
-        file : pathlib.Path, str
-            Absolute path to data file. Only .mat files supported
-        channel_names : List[str]
-            List of channel names, as they appeared in the original .smr file
-            Example: ['biceps', 'triceps', 'torque']
-            If not included, all channels will be processed
-        name : str
-            Descriptive name for trial; defaults to filename
-        subject_id : str
-            Subject's study identifier
-        path_save_figures : pathlib.Path
-            Path where trial and channel figures are to be saved
-            Defaults to new 'figures' folder where .mat was retrieved
-        path_save_trial : pathlib.Path
-            Path where trial data to be saved
-            Defaults to new 'data' folder where .mat was retrieved
+        Parameters
+        ----------
+        trial_info : dataclass (TrialInfo)
+            file : pathlib.Path, str
+                Absolute path to data file. Only .mat files supported
+            channel_names : List[str]
+                List of channel names, as they appeared in the original .smr file
+                Example: ['biceps', 'triceps', 'torque']
+                If not included, all channels will be processed
+            name : str
+                Descriptive name for trial; defaults to filename
+            subject_id : str
+                Subject's study identifier
+            path_save_figures : pathlib.Path
+                Path where trial and channel figures are to be saved
+                Defaults to new 'figures' folder where .mat was retrieved
+            path_save_trial : pathlib.Path
+                Path where trial data to be saved
+                Defaults to new 'data' folder where .mat was retrieved
 
-    Attributes
-    ----------
-    info : dataclass (TrialInfo)
-        Same as parameter trial_info
-    channel_dict : dict
-        dict of
-          key: channel names
-          value: channels.Channel
-    <Channels> : channels.Channel
-        Each channel appears with its name as an attribute.
-        For example: trial1.Torque
+        Attributes
+        ----------
+        info : dataclass (TrialInfo)
+            Same as parameter trial_info
+        channel_dict : dict
+            dict of
+              key: channel names
+              value: channels.Channel
+        <Channels> : channels.Channel
+            Each channel appears with its name as an attribute.
+            For example: trial1.Torque
 
-    Raises
-    ------
-    ValueError
-        If parameter `info.file` is not a valid full path to a data file
+        Raises
+        ------
+        ValueError
+            If parameter `info.file` is not a valid full path to a data file
 
-    """
+        """
 
     def __init__(self, trial_info: TrialInfo) -> None:
         if not trial_info.file:
@@ -88,7 +88,6 @@ class Trial(TrialA):
         self.info = trial_info
         self._add_defaults_to_trial_info(trial_info)
         self._parse_trial_data()
-
 
     def __repr__(self) -> str:
         channel_text = list()
@@ -138,27 +137,29 @@ class Trial(TrialA):
         self.channel_dict[name] = ch
         setattr(self, name, ch)
 
-    def remove(self, id: Union[str, Channel]):
-        if isinstance(id, str):
-            del self.channel_dict[id]
-            delattr(self, id)
-        if isinstance(id, Channel):
-            del self.channel_dict[id.name]
-            delattr(self, id.name)
+    def remove(self, id_: Union[str, Channel]):
+        if isinstance(id_, str):
+            del self.channel_dict[id_]
+            delattr(self, id_)
+        if isinstance(id_, Channel):
+            del self.channel_dict[id_.name]
+            delattr(self, id_.name)
 
     def _parse_trial_data(self):
 
         trial_data = self._import_trial_data()
         for key, value in trial_data.items():
             channel_type = value['ch_type']
+            # noinspection PyPep8Naming
             Ch = Channel.get_channel_generator(ch_type=channel_type)
             Ch: Channel
             value["path_save_figures"] = self.info.path_save_figures
             value["trial_name"] = self.info.name
             value["subject_id"] = self.info.subject_id
+            # noinspection PyCallingNonCallable
             self.add(key, Ch(key, value))
 
-    def _import_trial_data(self):
+    def _import_trial_data(self) -> parsed_spike2py_data:
         return read.read(self.info.file, self.info.channel_names)
 
     def plot(self, save: Literal[True, False] = None) -> None:
@@ -170,7 +171,7 @@ class Trial(TrialA):
         Parameters
         ----------
         file: pathlib.Path, str
-            Full path and file name to the path where to write the pickl.
+            Full path and file name to the path where to write the pickle.
             For example: '/home/tammy/Desktop/trial1.pkl`
             if file is None, Trial will be saved (pickled) to `info.path_save_trial` as info.name + '.pkl'
 

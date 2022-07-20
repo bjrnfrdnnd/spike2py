@@ -2,14 +2,11 @@ from __future__ import annotations
 
 from typing import NamedTuple
 
-class aa(NamedTuple):
+
+class Aa(NamedTuple):
     df: str
 
-class bb(aa):
-    df2: str
 
 if __name__ == '__main__':
-    aa_ = aa(df='er')
-    bb_ = bb(df2='er2')
+    aa_ = Aa(df='er')
     print(aa_)
-    print(bb_)

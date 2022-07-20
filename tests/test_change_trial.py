@@ -30,7 +30,7 @@ def test_bla(trial_default):
     fp2 = fp0.parent / f'{fp0.stem}_2{fp0.suffix}'
     fp = fp2
     print(fp)
-    actual.remove(id='triangle')
+    actual.remove(id_='triangle')
     print(f'writing {fp.name} {actual.info.file.name}: {actual.get_short_channel_info()}')
     actual.save(file=fp)
     actual = load(file=fp)
