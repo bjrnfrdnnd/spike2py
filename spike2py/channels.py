@@ -1,22 +1,21 @@
 from __future__ import annotations
+
 import sys
 from pathlib import Path
-# from typing import NamedTuple, Literal, Optional
 from typing import Literal, Optional, NamedTuple
 
 import numpy as np
 
 import spike2py.plot as plot
 import spike2py.sig_proc as sig_proc
-from spike2py.ABC import ChannelInfoA, ChannelA
 from spike2py.enums import EnumChannelTypes
-
 from spike2py.types import (
     parsed_wavemark,
     parsed_waveform,
     parsed_event,
     parsed_keyboard,
 )
+
 
 class ChannelInfo(NamedTuple):
     """Information about channel
@@ -32,27 +31,29 @@ class ChannelInfo(NamedTuple):
     trial_name: str = None
     subject_id: str = None
 
+
 class Channel:
+    # noinspection SpellCheckingInspection
     """Base class for all channel types
 
-    Parameters
-     ----------
-     channel_info
-         name
-             Name of channel (.e.g 'left biceps')
-         units
-             Units of recorded signal (e.g., 'Volts' or 'Nm')
-         sampling_frequency
-             In Hertz (e.g. 2048)
-         path
-             Defaults to path where data initially retrieved
-         trialname
-             Defaults to name of data file
-         subject_id
-             str indentifier
-     times
-         Sample times in seconds
-    """
+        Parameters
+         ----------
+         channel_info
+             name
+                 Name of channel (.e.g 'left biceps')
+             units
+                 Units of recorded signal (e.g., 'Volts' or 'Nm')
+             sampling_frequency
+                 In Hertz (e.g. 2048)
+             path
+                 Defaults to path where data initially retrieved
+             trialname
+                 Defaults to name of data file
+             subject_id
+                 str indentifier
+         times
+             Sample times in seconds
+        """
 
     def __init__(self, channel_info: ChannelInfo, times: np.ndarray) -> None:
         self.info = channel_info
@@ -65,8 +66,8 @@ class Channel:
 
     @classmethod
     def get_channel_generator(cls, ch_type: str) -> Channel:
-        thismodule = sys.modules[__name__]
-        result = getattr(thismodule, ch_type.title())
+        this_module = sys.modules[__name__]
+        result = getattr(this_module, ch_type.title())
         return result
 
     @classmethod
@@ -112,7 +113,7 @@ class Event(Channel):
         )
         self.type = EnumChannelTypes.EVENT.value
 
-    def plot(self, save: Literal[True, False] = False) -> None:
+    def plot(self, save: Literal[True, False] = False) -> Event:
         """Save Event channel figure
 
         Parameters
@@ -155,7 +156,7 @@ class Keyboard(Channel):
         self.codes = data_dict.get("codes", None)
         self.type = EnumChannelTypes.KEYBOARD.value
 
-    def plot(self, save: Literal[True, False] = False) -> None:
+    def plot(self, save: Literal[True, False] = False) -> Keyboard:
         """Save Keyboard channel figure
 
         Parameters
@@ -192,7 +193,7 @@ class Waveform(Channel, sig_proc.SignalProcessing):
             ChannelInfo(
                 name=name,
                 units=data_dict.get("units", None),
-                comment = data_dict.get("comment", None),
+                comment=data_dict.get("comment", None),
                 sampling_frequency=data_dict.get("sampling_frequency", None),
                 path_save_figures=data_dict.get("path_save_figures", None),
                 trial_name=data_dict.get("trial_name", None),
@@ -204,8 +205,7 @@ class Waveform(Channel, sig_proc.SignalProcessing):
         self.raw_values = self.values
         self.type = EnumChannelTypes.WAVEFORM.value
 
-
-    def plot(self, save: Literal[True, False] = None) -> None:
+    def plot(self, save: Literal[True, False] = None) -> Waveform:
         """Save Waveform channel figure
 
         Parameters

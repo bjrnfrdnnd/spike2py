@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import pathlib
 import typing
 from abc import ABC, abstractmethod
@@ -7,10 +8,10 @@ from typing import Literal, Union
 
 import numpy as np
 
-from spike2py.enums import EnumChannelTypes
 
 class ChannelInfoA(ABC):
     pass
+
 
 class ChannelA(ABC):
 

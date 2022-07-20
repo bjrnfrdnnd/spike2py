@@ -3,11 +3,12 @@ from typing import Literal, Tuple
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+# noinspection PyProtectedMember
 from matplotlib.axes._subplots import Subplot
 
-from spike2py.ABC import TrialA
 from spike2py.channels import Channel, Waveform, ChannelInfo
 from spike2py.enums import EnumChannelTypes
+from spike2py.trial import Trial
 from spike2py.types import all_channels, ticksline_channels
 
 LINE_WIDTH = 2
@@ -40,7 +41,7 @@ def plot_channel(spike2py_channel: all_channels, save: Literal[True, False]) -> 
         Instance of spike2py.channels.<ch> where possible ch are
         Event, Keyboard, Wavemark and Waveform
     save:
-        Whether or not to save the generated figure.
+        Whether to save the generated figure.
 
     Returns
     -------
@@ -127,8 +128,8 @@ class _TicksLine:
 
         self.ch_type = repr(ticks_line_channel).split()[1]
         self.line_start_end = (self.ch.times[0], self.ch.times[-1])
-        self.line_y_vals = (0.5 + y_offset, 0.5 + y_offset)
-        self.tick_y_vals = (0.2 + y_offset, 0.8 + y_offset)
+        self.line_y_values = (0.5 + y_offset, 0.5 + y_offset)
+        self.tick_y_values = (0.2 + y_offset, 0.8 + y_offset)
 
     def plot(self, ax: Subplot):
         if isinstance(ax, np.ndarray):
@@ -151,11 +152,11 @@ class _TicksLine:
     def _plot_ticks_line(self, ax1: Subplot):
         for time in self.ch.times:
             ax1.plot(
-                (time, time), self.tick_y_vals, linewidth=LINE_WIDTH, color=self.color
+                (time, time), self.tick_y_values, linewidth=LINE_WIDTH, color=self.color
             )
         ax1.plot(
             self.line_start_end,
-            self.line_y_vals,
+            self.line_y_values,
             linewidth=LINE_WIDTH,
             label=self.ch.info.name,
             color=self.color,
@@ -164,7 +165,7 @@ class _TicksLine:
     def _plot_codes(self, ax1: Subplot):
         for time, code in zip(self.ch.times, self.ch.codes):
             ax1.text(
-                time, self.tick_y_vals[1] + 0.2, code, color=self.color, fontsize=10
+                time, self.tick_y_values[1] + 0.2, code, color=self.color, fontsize=10
             )
 
     def _plot_action_potentials(self, ax2: Subplot):
@@ -173,20 +174,22 @@ class _TicksLine:
         ax2.get_yaxis().set_visible(False)
         ax2.get_xaxis().set_visible(False)
 
-    def _finalise_plot(self, ax1: Subplot):
+    @staticmethod
+    def _finalise_plot(ax1: Subplot):
         ax1.legend(loc=LEGEND_LOC)
         ax1.set_xlabel("time (s)")
         ax1.get_yaxis().set_visible(False)
         ax1.grid()
 
 
-def plot_trial(spike2py_trial: TrialA, save: Literal[True, False]) -> None:
+def plot_trial(spike2py_trial: Trial, save: Literal[True, False]) -> None:
     fig_height, n_subplots = _fig_height_n_subplots(spike2py_trial)
     if n_subplots == 1:
         print(
             f"The trial `{spike2py_trial.name}` has only one plottable channel."
             "\nPlease use `trial_name.ch_name.plot()` instead."
         )
+    # noinspection PyTypeChecker
     fig, ax = plt.subplots(
         sharex=True,
         nrows=n_subplots,
@@ -198,7 +201,7 @@ def plot_trial(spike2py_trial: TrialA, save: Literal[True, False]) -> None:
         _save_plot(spike2py_trial.name)
 
 
-def _fig_height_n_subplots(spike2py_trial: TrialA) -> Tuple[int, int]:
+def _fig_height_n_subplots(spike2py_trial: Trial) -> Tuple[int, int]:
     """Determine height and number of subplots to plot trial.
 
     Event, Keyboard and Wavemark channels are all plotted on same subplot at the top of the figure.
@@ -206,6 +209,7 @@ def _fig_height_n_subplots(spike2py_trial: TrialA) -> Tuple[int, int]:
     fig_height = 4
     n_subplots = 0
     plottable_ticks_line = False
+    # noinspection PyPep8Naming
     ECTs = EnumChannelTypes
     for k, v in spike2py_trial.channel_dict.items():
         current_channel = v
@@ -226,10 +230,11 @@ def _fig_height_n_subplots(spike2py_trial: TrialA) -> Tuple[int, int]:
     return fig_height, n_subplots
 
 
-def _plot_trial(spike2py_trial: TrialA, ax: Subplot):
+def _plot_trial(spike2py_trial: Trial, ax: Subplot):
     waveform_counter = 1
     other_ch_counter = 0
     n_subplots = len(ax)
+    # noinspection PyPep8Naming
     ECTs = EnumChannelTypes
     for k, v in spike2py_trial.channel_dict.items():
         current_channel = v

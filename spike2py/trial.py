@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Literal, Union
 
 from spike2py import read, plot
-from spike2py.ABC import TrialA, TrialInfoA
+from spike2py.ABC2 import TrialA, TrialInfoA
 from spike2py.channels import Channel
 from spike2py.enums import EnumChannelTypes
 
