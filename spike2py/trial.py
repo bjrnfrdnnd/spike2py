@@ -3,7 +3,8 @@ import pickle
 import typing
 from dataclasses import dataclass
 from pathlib import Path
-from typing import NamedTuple, List, Literal, Union
+# from typing import NamedTuple, List, Literal, Union
+from typing import List, Literal, Union
 
 from spike2py import read, plot
 from spike2py.ABC import TrialA, TrialInfoA

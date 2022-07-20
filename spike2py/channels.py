@@ -1,7 +1,8 @@
 from __future__ import annotations
 import sys
 from pathlib import Path
-from typing import NamedTuple, Literal, Optional
+# from typing import NamedTuple, Literal, Optional
+from typing import Literal, Optional, NamedTuple
 
 import numpy as np
 
@@ -17,11 +18,7 @@ from spike2py.types import (
     parsed_keyboard,
 )
 
-
-class ChannelInfoMeta(type(NamedTuple), type(ChannelInfoA)):
-    pass
-
-class ChannelInfo(NamedTuple, ChannelInfoA, metaclass=ChannelInfoMeta):
+class ChannelInfo(NamedTuple):
     """Information about channel
 
     See :class:`spike2py.channels.Channel` parameters for details.
@@ -35,8 +32,7 @@ class ChannelInfo(NamedTuple, ChannelInfoA, metaclass=ChannelInfoMeta):
     trial_name: str = None
     subject_id: str = None
 
-
-class Channel(ChannelA):
+class Channel:
     """Base class for all channel types
 
     Parameters

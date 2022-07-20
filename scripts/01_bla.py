@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 from typing import NamedTuple
 
+class aa(NamedTuple):
+    df: str
 
-
-class ChannelInfoMeta1(type(NamedTuple)):
-    pass
-
-
-
+class bb(aa):
+    df2: str
 
 if __name__ == '__main__':
-    print('er')
+    aa_ = aa(df='er')
+    bb_ = bb(df2='er2')
+    print(aa_)
+    print(bb_)
